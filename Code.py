@@ -24,10 +24,8 @@ def get_user():
 # Getting pizza flavour from user
 def get_pizza():
     connect = sqlite3.connect("pizza.db")
-    c = connect.cursor()
-    pizzas = c.execute("SELECT * FROM Pizza;").fetchall()
-    print(pizzas)
-    pizza = input("Please select what pizza you want from the list above: ")
+    grabpizza()
+    pizza = input("Please select the ID of the pizza you want from the list above: ")
     connect.close
     return pizza
 
@@ -35,10 +33,8 @@ def get_pizza():
 # Getting Base flavour from user
 def get_bases():
     connect = sqlite3.connect("pizza.db")
-    c = connect.cursor()
-    bases = c.execute("SELECT * FROM Base;").fetchall() 
-    print(bases)
-    base = input("Please select what base you want from the list above: ")
+    grabbase()
+    base = input("Please select the ID of the base you want from the list above: ")
     connect.close
     return base
 
@@ -57,30 +53,58 @@ def insert_data():
 def grabpizza():
     connect = sqlite3.connect("pizza.db")
     c = connect.cursor()
-    pizzas = c.execute("SELECT Type FROM Pizza;").fetchall()
-    print(pizzas)
+    pizzas = c.execute("SELECT ID, Type, Price FROM Pizza;").fetchall()
+    print("\nPizza ID            Pizza Flavour       Price\n")
+    for pizza in pizzas:
+        print(f"{pizza[0]:<20}{pizza[1]:<20}${pizza[2]:.2f}")
+    connect.close()
+    return pizza
 
 
 # Printing all of the bases
 def grabbase():
     connect = sqlite3.connect("pizza.db")
     c = connect.cursor()
-    bases = c.execute("SELECT Name FROM Base;").fetchall()
-    print(bases)
+    bases = c.execute("SELECT ID, Name, Price FROM Base;").fetchall()
+    print("\nBase ID            Base Flavour                            Price\n")
+    for base in bases:
+        print(f"{base[0]:<20}{base[1]:<40}${base[2]:.2f}")
+    connect.close()
+    return base
 
 
 def admin():
     verify = input("Please Enter Admin Password: ")
     if verify == "1234":
-        print("welcome Admin")
+        adminin()
     else:
         print("Wrong Password try again")
+        admin()
+
+
+# Printing all of the orders
+def orders():
+    connect = sqlite3.connect("pizza.db")
+    c = connect.cursor()
+    orders = c.execute("SELECT * FROM Customer_order;").fetchall()
+    print("\nOrder ID            Customer ID       Pizza Id      Base ID\n")
+    for order in orders:
+        print(f"{order[0]:<20}{order[2]:<20}{order[1]:<20}{order[3]:<20}")
+    connect.close()
+    return orders
+
+
+# Admin Page
+def adminin():
+    adminmenu = input("\n Welcome To Admin Page! \n Type 1 to View All Orders \n Type 2 to add a pizza flavour \n Type 3 to add a Base Flavour")
+    if adminmenu == "1":
+        orders()
 
 
 if __name__ == "__main__":
 
     while True:
-        menu = input("Welcome To Dominos! \n Type 1 to place and order \n Type 2 to view our pizza flavours \n Type 3 to view the types of bases \n Type 4 for Admin: \n Type 5 To Leave :( \n ")
+        menu = input("\n Welcome To Dominos! \n Type 1 to place and order \n Type 2 to view our pizza flavours \n Type 3 to view the types of bases \n Type 4 for Admin: \n Type 5 To Leave :( \n ")
 
         if menu == "1":
             customerid = get_user()
@@ -96,6 +120,6 @@ if __name__ == "__main__":
 
         if menu == "4":
             admins = admin()
-        
+
         if menu == "5":
             break
